@@ -1,9 +1,24 @@
-import React from 'react'
+import Feed from "@/components/dashboard/feed";
+import Sidebar from "@/components/dashboard/sidebar";
+import { Stories } from "@/components/dashboard/stories";
+import React from "react";
 
 const Home = () => {
   return (
-    <div className=''>Home</div>
-  )
-}
+    <div className="min-h-screen bg-background">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-6">
+            <Stories />
+            <Feed />
+          </div>
+          <div className="lg:sticky lg:top-8 lg:h-fit">
+            <Sidebar />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-export default Home
+export default Home;
