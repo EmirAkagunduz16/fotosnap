@@ -6,8 +6,8 @@ import { AUTH_INSTANCE } from './auth';
 import { toNodeHandler } from 'better-auth/node';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, { 
-    bodyParser: false 
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bodyParser: false,
   });
 
   const configService = app.get(ConfigService);
