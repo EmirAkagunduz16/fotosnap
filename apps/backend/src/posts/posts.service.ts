@@ -5,7 +5,6 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { schema } from 'src/database/database.module';
 import { post } from './schemas/schema';
 import { UsersService } from 'src/auth/users/users.service';
-import { user } from 'src/auth/schema';
 import { desc } from 'drizzle-orm';
 
 @Injectable()
@@ -38,11 +37,12 @@ export class PostsService {
       },
       orderBy: [desc(post.createdAt)],
     });
+
     return posts.map((p) => ({
       id: p.id,
       user: {
         username: p.user.name,
-        avatar: '',
+        avatar: p.user.image || '',
       },
       image: p.image,
       caption: p.caption,

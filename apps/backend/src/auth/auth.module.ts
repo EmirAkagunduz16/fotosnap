@@ -4,6 +4,7 @@ import { DatabaseModule } from '../database/database.module';
 import { DATABASE_CONNECTION } from '../database/database-connection';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import * as authSchema from './schema';
 
 export const AUTH_INSTANCE = Symbol('AUTH_INSTANCE');
 
@@ -23,6 +24,7 @@ export class AuthModule {
               basePath: '/api/auth',
               database: drizzleAdapter(database, {
                 provider: 'pg',
+                schema: authSchema,
               }),
               trustedOrigins: [configService.getOrThrow<string>('UI_URL')],
               emailAndPassword: {

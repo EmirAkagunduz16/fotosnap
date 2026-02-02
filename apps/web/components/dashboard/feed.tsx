@@ -85,18 +85,14 @@ export default function Feed({ posts }: FeedProps) {
   const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001";
 
   const getImageUrl = (imagePath: string) => {
+    // Boş string kontrolü
+    if (!imagePath) return "";
+    
     // Resimler uploads/images/ klasöründe
     const path = imagePath.startsWith("images/") ? imagePath : `images/${imagePath}`;
     return `${BASE_URL}/uploads/${path}`;
   };
 
-  const getAvatarUrl = (avatarPath: string) => {
-    if (!avatarPath) {
-      return "";
-    }
-    const path = avatarPath.startsWith("images/") ? avatarPath : `images/${avatarPath}`;
-    return `${BASE_URL}/uploads/${path}`;
-  };
 
   return (
     <div className="space-y-6">
@@ -104,9 +100,9 @@ export default function Feed({ posts }: FeedProps) {
         <Card key={post.id} className="overflow-hidden">
           <div className="flex items-center justify-between p-4">
             <div className="flex items-center space-x-3">
-              {getAvatarUrl(post.user.avatar) ? (
+              {getImageUrl(post.user.avatar) ? (
                 <Image
-                  src={getAvatarUrl(post.user.avatar)}
+                  src={getImageUrl(post.user.avatar)}
                   alt={post.user.username}
                   width={64}
                   height={64}
