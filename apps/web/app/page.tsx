@@ -5,12 +5,39 @@ import PhotoUpload from "@/components/dashboard/photo-upload";
 import Sidebar from "@/components/dashboard/sidebar";
 import { Stories } from "@/components/dashboard/stories";
 import { Button } from "@/components/ui/button";
+import { trpc } from "@/lib/trpc/client";
 import { Plus } from "lucide-react";
 import React, { useState } from "react";
 
 const Home = () => {
   const [showUploadModal, setShowModalUpload] = useState(false);
-  const handleCreatePost = async (file: File, caption: string) => {};
+  const posts = trpc.postsRouter.findAll.useQuery();
+  const createPost = trpc.postsRouter.create.useMutation({
+    onSuccess: () => {
+      utils.postsRouter.findAll.invalidate();
+    }
+  });
+  const utils = trpc.useUtils();
+
+  const handleCreatePost = async (file: File, caption: string) => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const uploadResponse = await fetch("/api/upload/image", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!uploadResponse.ok) {
+      throw new Error("Image upload failed");
+    }
+
+    const { filename } = await uploadResponse.json();
+    await createPost.mutateAsync({
+      image: filename,
+      caption,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -18,7 +45,7 @@ const Home = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
             <Stories />
-            <Feed />
+            <Feed posts={posts.data || []} />
           </div>
           <div className="lg:sticky lg:top-8 lg:h-fit">
             <Sidebar />

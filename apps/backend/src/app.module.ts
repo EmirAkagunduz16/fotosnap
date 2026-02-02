@@ -12,6 +12,7 @@ import { UploadModule } from './upload/upload.module';
   imports: [
     TRPCModule.forRoot({
       autoSchemaFile: '../../packages/trpc/src/server',
+      basePath: '/api/trpc',
     }),
     ConfigModule.forRoot({
       isGlobal: true,

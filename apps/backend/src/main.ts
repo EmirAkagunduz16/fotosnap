@@ -4,10 +4,17 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
 import { AUTH_INSTANCE } from './auth';
 import { toNodeHandler } from 'better-auth/node';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     bodyParser: false,
+  });
+
+  app.setGlobalPrefix('api');
+  const uploadsPath = join(__dirname, '../../uploads');
+  app.useStaticAssets(uploadsPath, {
+    prefix: '/uploads/',
   });
 
   const configService = app.get(ConfigService);
