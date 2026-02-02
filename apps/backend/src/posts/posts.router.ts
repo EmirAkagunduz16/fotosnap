@@ -1,26 +1,46 @@
-import { Input, Mutation, Query, Router } from 'nestjs-trpc';
+import {
+  Ctx,
+  Input,
+  Mutation,
+  Query,
+  Router,
+  UseMiddlewares,
+} from 'nestjs-trpc';
 import {
   CreatePostInput,
   createPostSchema,
+  LikePostInput,
+  likePostSchema,
   postSchema,
-} from './schemas/trpc.schema';
+} from '@repo/trpc/schemas';
 import { PostsService } from './posts.service';
 import z from 'zod';
+import { AuthTrpcMiddleware } from 'src/auth/auth-trpc-middleware';
+import { AppContext } from 'src/app-contex.interface';
 
 @Router()
+@UseMiddlewares(AuthTrpcMiddleware)
 export class PostsRouter {
   constructor(private readonly postsService: PostsService) {}
 
-  @Mutation({ input: createPostSchema, output: postSchema })
-  async create(@Input() createPostDto: CreatePostInput) {
-    return this.postsService.create(
-      createPostDto,
-      'pYaKqWUFtCqhswE6yY2DJURN2CgoE5zl',
-    );
+  @Mutation({ input: createPostSchema })
+  async create(
+    @Input() createPostDto: CreatePostInput,
+    @Ctx() ctx: AppContext,
+  ) {
+    return this.postsService.create(createPostDto, ctx.user.id);
   }
 
   @Query({ output: z.array(postSchema) })
-  async findAll() {
-    return this.postsService.findAll();
+  async findAll(@Ctx() ctx: AppContext) {
+    return this.postsService.findAll(ctx.user.id);
+  }
+
+  @Mutation({ input: likePostSchema })
+  async likePost(
+    @Input() likePostInput: LikePostInput,
+    @Ctx() ctx: AppContext,
+  ) {
+    return this.postsService.likePost(likePostInput.postId, ctx.user.id);
   }
 }

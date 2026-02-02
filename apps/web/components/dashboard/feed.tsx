@@ -16,83 +16,28 @@ interface Post {
   likes: number;
   comments: number;
   timestamp: string;
+  isLiked?: boolean;
 }
-
-// const mockPosts: Post[] = [
-//   {
-//     id: "1",
-//     user: {
-//       username: "johndoe",
-//       avatar:
-//         "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face",
-//     },
-//     image:
-//       "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face",
-//     caption: "Enjoying the sunny day!",
-//     likes: 120,
-//     comments: 15,
-//     timestamp: "2 hours ago",
-//   },
-//   {
-//     id: "2",
-//     user: {
-//       username: "janedoe",
-//       avatar:
-//         "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face",
-//     },
-//     image:
-//       "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face",
-//     caption: "Enjoying the sunny day!",
-//     likes: 10,
-//     comments: 1,
-//     timestamp: "1 hours ago",
-//   },
-//   {
-//     id: "3",
-//     user: {
-//       username: "micheal",
-//       avatar:
-//         "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face",
-//     },
-//     image:
-//       "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face",
-//     caption: "Enjoying!",
-//     likes: 1900,
-//     comments: 35,
-//     timestamp: "18 hours ago",
-//   },
-//   {
-//     id: "4",
-//     user: {
-//       username: "jhonny",
-//       avatar:
-//         "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face",
-//     },
-//     image:
-//       "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face",
-//     caption: "Enjoying the funny day!",
-//     likes: 520,
-//     comments: 10,
-//     timestamp: "2 week ago",
-//   },
-// ];
 
 interface FeedProps {
   posts: Post[];
+  onLikePost: (postId: number) => void;
 }
 
-export default function Feed({ posts }: FeedProps) {
-  const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001";
+export default function Feed({ posts, onLikePost }: FeedProps) {
+  const BASE_URL =
+    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001";
 
   const getImageUrl = (imagePath: string) => {
     // Boş string kontrolü
     if (!imagePath) return "";
-    
+
     // Resimler uploads/images/ klasöründe
-    const path = imagePath.startsWith("images/") ? imagePath : `images/${imagePath}`;
+    const path = imagePath.startsWith("images/")
+      ? imagePath
+      : `images/${imagePath}`;
     return `${BASE_URL}/uploads/${path}`;
   };
-
 
   return (
     <div className="space-y-6">
@@ -134,10 +79,12 @@ export default function Feed({ posts }: FeedProps) {
                 <Button
                   variant={"ghost"}
                   size={"sm"}
-                  onClick={() => {}}
+                  onClick={() => onLikePost(post.id)}
                   className="p-0 h-auto"
                 >
-                  <Heart className="w-6 h-6 text-foreground" />
+                  <Heart
+                    className={`w-6 h-6 ${post.isLiked ? "fill-red-500 text-red-500" : "text-foreground"} `}
+                  />
                 </Button>
                 <Button
                   variant={"ghost"}
@@ -164,7 +111,7 @@ export default function Feed({ posts }: FeedProps) {
             )}
 
             <div className="text-xs text-muted-foreground uppercase">
-              {post.timestamp}
+              {new Date(post.timestamp).toLocaleDateString()}
             </div>
           </div>
         </Card>

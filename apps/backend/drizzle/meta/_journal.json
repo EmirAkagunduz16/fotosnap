@@ -15,6 +15,20 @@
       "when": 1769940314383,
       "tag": "0001_clear_arclight",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1770042989509,
+      "tag": "0002_curved_king_bedlam",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1770043957832,
+      "tag": "0003_complete_leader",
+      "breakpoints": true
     }
   ]
 }
