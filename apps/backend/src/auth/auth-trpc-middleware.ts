@@ -4,7 +4,7 @@ import {
   MiddlewareOptions,
   MiddlewareResponse,
   TRPCMiddleware,
-} from 'nestjs-trpc';
+} from '@mguay/nestjs-trpc';
 import type { Auth } from 'better-auth';
 
 @Injectable()

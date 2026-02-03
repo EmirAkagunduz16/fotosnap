@@ -4,11 +4,12 @@ import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth';
 import { AppController } from './app.controller';
 import { PostsModule } from './posts/posts.module';
-import { TRPCModule } from 'nestjs-trpc';
+import { TRPCModule } from '@mguay/nestjs-trpc';
 import { UsersModule } from './auth/users/users.module';
 import { UploadModule } from './upload/upload.module';
 import { AppContext } from './app.context';
 import { AuthTrpcMiddleware } from './auth/auth-trpc-middleware';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AuthTrpcMiddleware } from './auth/auth-trpc-middleware';
     PostsModule,
     UsersModule,
     UploadModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [AuthTrpcMiddleware, AppContext],

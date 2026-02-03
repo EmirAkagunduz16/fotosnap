@@ -5,6 +5,7 @@ import { integer } from 'drizzle-orm/pg-core';
 import { serial } from 'drizzle-orm/pg-core';
 import { pgTable } from 'drizzle-orm/pg-core';
 import { user } from 'src/auth/schema';
+import { comment } from 'src/comments/schemas/schema';
 
 export const post = pgTable('post', {
   id: serial('id').primaryKey(),
@@ -23,6 +24,7 @@ export const postRelations = relations(post, ({ one, many }) => ({
     references: [user.id],
   }),
   likes: many(like),
+  comments: many(comment),
 }));
 
 export const like = pgTable('like', {

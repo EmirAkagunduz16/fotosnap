@@ -29,6 +29,13 @@
       "when": 1770043957832,
       "tag": "0003_complete_leader",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1770106907080,
+      "tag": "0004_smooth_serpent_society",
+      "breakpoints": true
     }
   ]
 }
