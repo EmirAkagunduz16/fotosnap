@@ -33,6 +33,7 @@ export class CommentsService {
     return comments.map((comment) => ({
       id: comment.id,
       text: comment.text,
+      userId: comment.userId,
       createdAt: comment.createdAt.toISOString(),
       user: {
         username: comment.user.name,

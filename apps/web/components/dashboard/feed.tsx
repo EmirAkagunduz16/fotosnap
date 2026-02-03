@@ -5,13 +5,22 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, MessageCircle, User } from "lucide-react";
 import { Post } from "@repo/trpc/schemas";
+import { useState } from "react";
+import PostComments from "./post-comments";
 
 interface FeedProps {
   posts: Post[];
   onLikePost: (postId: number) => void;
+  onAddComment: (postId: number, text: string) => void;
+  onDeleteComment: (commentId: number) => void;
 }
 
-export default function Feed({ posts, onLikePost }: FeedProps) {
+export default function Feed({
+  posts,
+  onLikePost,
+  onAddComment,
+  onDeleteComment,
+}: FeedProps) {
   const BASE_URL =
     process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001";
 
@@ -24,6 +33,22 @@ export default function Feed({ posts, onLikePost }: FeedProps) {
       ? imagePath
       : `images/${imagePath}`;
     return `${BASE_URL}/uploads/${path}`;
+  };
+
+  const [expandedComments, setExpandedComments] = useState<Set<number>>(
+    new Set(),
+  );
+
+  const toggleComments = (postId: number) => {
+    setExpandedComments((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(postId)) {
+        newSet.delete(postId);
+      } else {
+        newSet.add(postId);
+      }
+      return newSet;
+    });
   };
 
   return (
@@ -76,10 +101,12 @@ export default function Feed({ posts, onLikePost }: FeedProps) {
                 <Button
                   variant={"ghost"}
                   size={"sm"}
-                  onClick={() => {}}
+                  onClick={() => toggleComments(post.id)}
                   className="p-0 h-auto"
                 >
-                  <MessageCircle className="w-6 h-6 text-foreground" />
+                  <MessageCircle
+                    className={`w-6 h-6 ${expandedComments.has(post.id) ? "fill-primary text-primary" : "text-foreground"}`}
+                  />
                 </Button>
               </div>
             </div>
@@ -92,7 +119,10 @@ export default function Feed({ posts, onLikePost }: FeedProps) {
             </div>
 
             {post.comments > 0 && (
-              <div className="text-sm text-muted-foreground">
+              <div
+                className="text-sm text-muted-foreground hover:cursor-pointer"
+                onClick={() => toggleComments(post.id)}
+              >
                 View all {post.comments} comments
               </div>
             )}
@@ -100,6 +130,16 @@ export default function Feed({ posts, onLikePost }: FeedProps) {
             <div className="text-xs text-muted-foreground uppercase">
               {new Date(post.timestamp).toLocaleDateString()}
             </div>
+
+            {expandedComments.has(post.id) && (
+              <div className="pt-4 border-t">
+                <PostComments
+                  postId={post.id}
+                  onAddComment={onAddComment}
+                  onDeleteComment={onDeleteComment}
+                />
+              </div>
+            )}
           </div>
         </Card>
       ))}

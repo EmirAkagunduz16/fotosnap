@@ -2,50 +2,42 @@ import Image from "next/image";
 import { Card } from "../ui/card";
 import { authClient } from "@/lib/auth/client";
 import { getImageUrl } from "@/lib/image";
-import { User } from "lucide-react";
+import { Plus, User } from "lucide-react";
+import { StoryGroup } from "@repo/trpc/schemas";
+import { useState } from "react";
+import { Button } from "../ui/button";
 
-interface Story {
-  id: string;
-  username: string;
-  avatar: string;
+interface StoriesProps {
+  storyGroups: StoryGroup[];
+  onStoryUpload: (file: File) => Promise<void>;
 }
 
-const mockStories: Story[] = [
-  {
-    id: "1",
-    username: "johndoe",
-    avatar:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face",
-  },
-  {
-    id: "2",
-    username: "janedoe",
-    avatar:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face",
-  },
-  {
-    id: "3",
-    username: "micheal",
-    avatar:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face",
-  },
-  {
-    id: "4",
-    username: "jhonny",
-    avatar:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face",
-  },
-];
+export function Stories({ storyGroups, onStoryUpload }: StoriesProps) {
+  const [showCreateStory, setShowCreateStory] = useState(false);
+  const [showStoryViewer, setShowStoryViewer] = useState(false);
 
-export function Stories() {
   const { data: session } = authClient.useSession();
+
+  const ownStoryGroup = storyGroups.find(
+    (group) => group.userId === session?.user?.id,
+  );
+  const otherStoryGroups = storyGroups.filter(
+    (group) => group.userId !== session?.user?.id,
+  );
 
   return (
     <Card className="p-4">
       <div className="flex space-x-4 overflow-x-auto scrollbar-hide pb-2">
         <div className="flex flex-col items-center space-y-1 shrink-0">
           <div className="relative">
-            <div className="p-0.5 rounded-full bg-linear-to-r from-yellow-400 to-fuchsia-600 bg-gray-200">
+            <div
+              className={`p-0.5 rounded-full ${ownStoryGroup ? "bg-linear-to-r from-yellow-400 to-fuchsia-600" : "bg-gray-200"}`}
+              onClick={() => {
+                if (ownStoryGroup) {
+                  setShowStoryViewer(true);
+                }
+              }}
+            >
               {session?.user.image ? (
                 <Image
                   src={getImageUrl(session?.user?.image)}
@@ -60,6 +52,14 @@ export function Stories() {
                 </div>
               )}
             </div>
+
+            <Button
+              onClick={() => setShowCreateStory(true)}
+              size={"icon"}
+              className="absolute bottom-0 right-0 w-5 h-5 rounded-full border-2 border-white"
+            >
+              <Plus className="w-3 h-3" />
+            </Button>
           </div>
           <span
             className="text-xs text-center w-16 truncate"
@@ -68,27 +68,34 @@ export function Stories() {
             Your story
           </span>
         </div>
-        {mockStories.map((story) => (
+        {otherStoryGroups?.map((storyGroup) => (
           <div
             className="flex flex-col items-center space-y-1 shrink-0"
-            key={story.id}
+            key={storyGroup.userId}
+            onClick={() => setShowStoryViewer(true)}
           >
             <div className="relative">
               <div className="p-0.8 rounded-full bg-linear-to-r from-yellow-400 to-fuchsia-600 bg-gray-200">
-                <Image
-                  src={story.avatar}
-                  alt={story.username}
-                  className="rounded-full object-cover border-2 border-white"
-                  width={64}
-                  height={64}
-                />
+                {storyGroup.avatar ? (
+                  <Image
+                    src={getImageUrl(storyGroup.avatar)}
+                    alt={storyGroup.username}
+                    className="rounded-full object-cover border-2 border-white"
+                    width={64}
+                    height={64}
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center border-2 border-white">
+                    <User className="w-6 h-6 text-muted-foreground" />
+                  </div>
+                )}
               </div>
             </div>
             <span
               className="text-xs text-center w-16 truncate"
-              title={story.username}
+              title={storyGroup.username}
             >
-              {story.username}
+              {storyGroup.username}
             </span>
           </div>
         ))}

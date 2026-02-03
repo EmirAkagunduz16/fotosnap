@@ -10,6 +10,7 @@ import { UploadModule } from './upload/upload.module';
 import { AppContext } from './app.context';
 import { AuthTrpcMiddleware } from './auth/auth-trpc-middleware';
 import { CommentsModule } from './comments/comments.module';
+import { StoriesModule } from './stories/stories.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { CommentsModule } from './comments/comments.module';
     UsersModule,
     UploadModule,
     CommentsModule,
+    StoriesModule,
   ],
   controllers: [AppController],
   providers: [AuthTrpcMiddleware, AppContext],

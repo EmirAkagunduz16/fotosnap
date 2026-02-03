@@ -4,7 +4,6 @@ import { DATABASE_CONNECTION } from 'src/database/database-connection';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { schema } from 'src/database/database.module';
 import { like, post } from './schemas/schema';
-import { UsersService } from 'src/auth/users/users.service';
 import { and, desc, eq } from 'drizzle-orm';
 
 @Injectable()
@@ -12,7 +11,6 @@ export class PostsService {
   constructor(
     @Inject(DATABASE_CONNECTION)
     private readonly database: NodePgDatabase<typeof schema>,
-    private readonly usersService: UsersService,
   ) {}
 
   async create(createPostInput: CreatePostInput, userId: string) {
@@ -32,6 +30,7 @@ export class PostsService {
       with: {
         user: true,
         likes: true,
+        comments: true,
       },
       orderBy: [desc(post.createdAt)],
     });
@@ -46,7 +45,7 @@ export class PostsService {
       likes: p.likes.length,
       caption: p.caption,
       timestamp: p.createdAt.toISOString(),
-      comments: 0,
+      comments: p.comments.length,
       isLiked: p.likes.some((like) => like.userId === userId),
     }));
   }
