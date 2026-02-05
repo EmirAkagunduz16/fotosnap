@@ -9,6 +9,8 @@ import {
 import {
   CreatePostInput,
   createPostSchema,
+  FindAllPostInput,
+  findAllPostsSchema,
   LikePostInput,
   likePostSchema,
   postSchema,
@@ -31,9 +33,9 @@ export class PostsRouter {
     return this.postsService.create(createPostDto, ctx.user.id);
   }
 
-  @Query({ output: z.array(postSchema) })
-  async findAll(@Ctx() ctx: AppContext) {
-    return this.postsService.findAll(ctx.user.id);
+  @Query({ output: z.array(postSchema), input: findAllPostsSchema })
+  async findAll(@Ctx() ctx: AppContext, @Input() input: FindAllPostInput) {
+    return this.postsService.findAll(ctx.user.id, input.userId);
   }
 
   @Mutation({ input: likePostSchema })

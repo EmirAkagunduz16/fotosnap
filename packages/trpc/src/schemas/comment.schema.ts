@@ -18,6 +18,7 @@ export const commentSchema = z.object({
   text: z.string(),
   userId: z.string(),
   user: z.object({
+    id: z.string(),
     username: z.string(),
     avatar: z.string(),
   }),

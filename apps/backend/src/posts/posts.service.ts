@@ -25,13 +25,14 @@ export class PostsService {
       .returning();
   }
 
-  async findAll(userId: string): Promise<Post[]> {
+  async findAll(userId: string, postUserId?: string): Promise<Post[]> {
     const posts = await this.database.query.post.findMany({
       with: {
         user: true,
         likes: true,
         comments: true,
       },
+      where: postUserId ? eq(post.userId, postUserId) : undefined,
       orderBy: [desc(post.createdAt)],
     });
 
@@ -39,6 +40,7 @@ export class PostsService {
       id: p.id,
       user: {
         username: p.user.name,
+        id: p.user.id,
         avatar: p.user.image || '',
       },
       image: p.image,

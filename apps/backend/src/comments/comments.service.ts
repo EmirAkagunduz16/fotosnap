@@ -37,6 +37,7 @@ export class CommentsService {
       createdAt: comment.createdAt.toISOString(),
       user: {
         username: comment.user.name,
+        id: comment.user.id,
         avatar: comment.user.image || '',
       },
     }));
