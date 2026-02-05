@@ -1,10 +1,5 @@
 import z from "zod";
 
-export const userSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-});
-
 export const userIdSchema = z.object({
   userId: z.string(),
 });
@@ -21,7 +16,7 @@ export const userProfileSchema = z.object({
   bio: z.string().nullable(),
   website: z.string().nullable(),
   image: z.string().nullable(),
-  followersCount: z.number(),
+  followerCount: z.number(),
   followingCount: z.number(),
   postCount: z.number(),
   isFollowing: z.boolean(),

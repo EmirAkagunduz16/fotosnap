@@ -15,17 +15,16 @@ interface StoriesProps {
 }
 
 export function Stories({ storyGroups, onStoryUpload }: StoriesProps) {
+  const { data: session } = authClient.useSession();
   const [showCreateStory, setShowCreateStory] = useState(false);
   const [showStoryViewer, setShowStoryViewer] = useState(false);
   const [selectedGroupIndex, setSelectedGroupIndex] = useState(0);
 
-  const { data: session } = authClient.useSession();
-
   const ownStoryGroup = storyGroups.find(
-    (group) => group.userId === session?.user?.id,
+    (group) => group.userId === session?.user.id
   );
   const otherStoryGroups = storyGroups.filter(
-    (group) => group.userId !== session?.user?.id,
+    (group) => group.userId !== session?.user.id
   );
 
   return (
@@ -34,7 +33,7 @@ export function Stories({ storyGroups, onStoryUpload }: StoriesProps) {
         <div className="flex flex-col items-center space-y-1 shrink-0">
           <div className="relative">
             <div
-              className={`p-0.5 rounded-full ${ownStoryGroup ? "bg-linear-to-r from-yellow-400 to-fuchsia-600" : "bg-gray-200"}`}
+              className={`p-0.5 rounded-full ${ownStoryGroup ? `bg-linear-to-tr from-yellow-400 to-fuchsia-600` : `bg-gray-200`}`}
               onClick={() => {
                 if (ownStoryGroup) {
                   setSelectedGroupIndex(0);
@@ -44,11 +43,11 @@ export function Stories({ storyGroups, onStoryUpload }: StoriesProps) {
             >
               {session?.user.image ? (
                 <Image
-                  src={getImageUrl(session?.user?.image)}
-                  alt="Your Profile"
-                  className="w-16 h-16 rounded-full"
+                  src={getImageUrl(session?.user.image)}
+                  alt="Your profile picture"
                   width={64}
                   height={64}
+                  className="w-16 h-16 rounded-full object-cover border-2 border-white"
                 />
               ) : (
                 <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
@@ -56,10 +55,9 @@ export function Stories({ storyGroups, onStoryUpload }: StoriesProps) {
                 </div>
               )}
             </div>
-
             <Button
               onClick={() => setShowCreateStory(true)}
-              size={"icon"}
+              size="icon"
               className="absolute bottom-0 right-0 w-5 h-5 rounded-full border-2 border-white"
             >
               <Plus className="w-3 h-3" />
@@ -67,29 +65,29 @@ export function Stories({ storyGroups, onStoryUpload }: StoriesProps) {
           </div>
           <span
             className="text-xs text-center w-16 truncate"
-            title={"Your Story"}
+            title="Your story"
           >
             Your story
           </span>
         </div>
         {otherStoryGroups?.map((storyGroup, index) => (
           <div
-            className="flex flex-col items-center space-y-1 shrink-0"
             key={storyGroup.userId}
+            className="flex flex-col items-center space-y-1 flex-shrink-0"
             onClick={() => {
               setSelectedGroupIndex(ownStoryGroup ? index + 1 : index);
               setShowStoryViewer(true);
             }}
           >
             <div className="relative">
-              <div className="p-0.8 rounded-full bg-linear-to-r from-yellow-400 to-fuchsia-600 bg-gray-200">
+              <div className="p-0.5 rounded-full bg-gradient-to-tr from-yellow-400 to-fuchsia-600 bg-gray-200">
                 {storyGroup.avatar ? (
                   <Image
                     src={getImageUrl(storyGroup.avatar)}
                     alt={storyGroup.username}
-                    className="rounded-full object-cover border-2 border-white"
                     width={64}
                     height={64}
+                    className="w-16 h-16 rounded-full object-cover border-2 border-white"
                   />
                 ) : (
                   <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center border-2 border-white">
@@ -113,11 +111,12 @@ export function Stories({ storyGroups, onStoryUpload }: StoriesProps) {
         onOpenChange={setShowCreateStory}
         onSubmit={onStoryUpload}
       />
+
       <StoryViewer
         storyGroups={storyGroups}
+        initialGroupIndex={selectedGroupIndex}
         open={showStoryViewer}
         onOpenChange={setShowStoryViewer}
-        initialGroupIndex={selectedGroupIndex}
       />
     </Card>
   );

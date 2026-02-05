@@ -1,10 +1,9 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { and, eq, ne, notInArray, sql } from 'drizzle-orm';
+import { DATABASE_CONNECTION } from '../../database/database-connection';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { DATABASE_CONNECTION } from 'src/database/database-connection';
-import { schema } from 'src/database/database.module';
+import { schema } from '../../database/database.module';
+import { and, eq, ne, notInArray, sql } from 'drizzle-orm';
 import { follow, user } from '../schema';
-import { post } from 'src/posts/schemas/schema';
 import { UpdateProfileInput, UserProfile } from '@repo/trpc/schemas';
 
 @Injectable()
@@ -59,7 +58,7 @@ export class UsersService {
 
   async follow(followerId: string, followingId: string) {
     if (followerId === followingId) {
-      throw new Error('Users cannot follow themselves');
+      throw new Error('Cannot follow yourself');
     }
 
     const existingFollow = await this.database.query.follow.findFirst({
@@ -123,19 +122,18 @@ export class UsersService {
     });
     const followingIdsList = followingIds.map((f) => f.followingId);
 
-    return this.database.query.user.findMany({
-      where: and(
-        ne(user.id, userId),
-        followingIdsList.length > 0
-          ? notInArray(user.id, followingIdsList)
-          : undefined,
-      ),
-      columns: {
-        id: true,
-        name: true,
-      },
-      limit: 5,
-    });
+    return this.database
+      .select(this.profileSelect(userId))
+      .from(user)
+      .where(
+        and(
+          ne(user.id, userId),
+          followingIdsList.length > 0
+            ? notInArray(user.id, followingIdsList)
+            : undefined,
+        ),
+      )
+      .limit(5);
   }
 
   async getUserProfile(
@@ -143,34 +141,7 @@ export class UsersService {
     currentUserId: string,
   ): Promise<UserProfile> {
     const result = await this.database
-      .select({
-        id: user.id,
-        name: user.name,
-        image: user.image,
-        bio: user.bio,
-        website: user.website,
-        followersCount: sql<number>`(
-        SELECT COUNT(*)::int 
-        FROM ${follow} f
-        WHERE f.${follow.followingId} = ${user.id}
-      )`,
-        followingCount: sql<number>`(
-        SELECT COUNT(*)::int 
-        FROM ${follow} f
-        WHERE f.${follow.followerId} = ${user.id}
-      )`,
-        postCount: sql<number>`(
-        SELECT COUNT(*)::int 
-        FROM ${post} p
-        WHERE p.${post.userId} = ${user.id}
-      )`,
-        isFollowing: sql<boolean>`EXISTS(
-        SELECT 1
-        FROM ${follow} f
-        WHERE f.${follow.followerId} = ${currentUserId}
-          AND f.${follow.followingId} = ${user.id}
-      )`,
-      })
+      .select(this.profileSelect(currentUserId))
       .from(user)
       .where(eq(user.id, userId));
 

@@ -63,6 +63,24 @@ const Home = () => {
     },
   });
 
+  const savePost = trpc.postsRouter.savePost.useMutation({
+    onMutate: ({ postId }) => {
+      utils.postsRouter.findAll.setData({}, (old) => {
+        if (!old) return old;
+
+        return old.map((post) => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              isSaved: !post.isSaved,
+            };
+          }
+          return post;
+        });
+      });
+    },
+  });
+
   const deleteComment = trpc.commentsRouter.delete.useMutation({
     onSuccess: () => {
       utils.commentsRouter.findByPostId.invalidate();
@@ -125,6 +143,7 @@ const Home = () => {
               onStoryUpload={handleStoryUpload}
             />
             <Feed
+              onSavePost={(postId) => savePost.mutate({ postId })}
               posts={posts.data || []}
               onLikePost={(postId) => likePost.mutate({ postId })}
               onAddComment={(postId, text) =>

@@ -10,7 +10,6 @@ import { AuthTrpcMiddleware } from '../auth-trpc-middleware';
 import {
   userIdSchema,
   UserIdInput,
-  userSchema,
   updateProfileSchema,
   UpdateProfileInput,
   userProfileSchema,

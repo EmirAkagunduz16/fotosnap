@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, User } from "lucide-react";
+import { Bookmark, Heart, MessageCircle, User } from "lucide-react";
 import { Post } from "@repo/trpc/schemas";
 import { useState } from "react";
 import PostComments from "./post-comments";
@@ -14,6 +14,7 @@ interface FeedProps {
   onLikePost: (postId: number) => void;
   onAddComment: (postId: number, text: string) => void;
   onDeleteComment: (commentId: number) => void;
+  onSavePost: (postId: number) => void;
 }
 
 export default function Feed({
@@ -21,6 +22,8 @@ export default function Feed({
   onLikePost,
   onAddComment,
   onDeleteComment,
+  onSavePost,
+
 }: FeedProps) {
   const router = useRouter();
   const BASE_URL =
@@ -116,6 +119,17 @@ export default function Feed({
                     className={`w-6 h-6 ${expandedComments.has(post.id) ? "fill-primary text-primary" : "text-foreground"}`}
                   />
                 </Button>
+
+                <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onSavePost(post.id)}
+                className="p-0 h-auto"
+              >
+                <Bookmark
+                  className={`w-6 h-6 ${post.isSaved ? "fill-foreground" : ""}`}
+                />
+              </Button>
               </div>
             </div>
 

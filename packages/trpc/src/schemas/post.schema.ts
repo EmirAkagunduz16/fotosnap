@@ -18,6 +18,7 @@ export const postSchema = z.object({
   comments: z.number(),
   timestamp: z.string(),
   isLiked: z.boolean().optional(),
+  isSaved: z.boolean().optional(),
 });
 
 export const findAllPostsSchema = z.object({

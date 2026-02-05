@@ -4,14 +4,15 @@ import { DATABASE_CONNECTION } from 'src/database/database-connection';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { schema } from 'src/database/database.module';
 import { like, post, savedPost } from './schemas/schema';
-import { and, desc, eq } from 'drizzle-orm';
+import { and, desc, eq, inArray } from 'drizzle-orm';
+import { follow } from 'src/auth/schema';
 
 @Injectable()
 export class PostsService {
   constructor(
     @Inject(DATABASE_CONNECTION)
     private readonly database: NodePgDatabase<typeof schema>,
-  ) {}
+  ) { }
 
   async create(createPostInput: CreatePostInput, userId: string) {
     await this.database
@@ -32,25 +33,37 @@ export class PostsService {
         likes: true,
         comments: true,
       },
-      where: postUserId ? eq(post.userId, postUserId) : undefined,
+      where: postUserId
+        ? eq(post.userId, postUserId)
+        : inArray(post.userId, await this.getFollowedUserIds(userId)),
       orderBy: [desc(post.createdAt)],
     });
-
-    return posts.map((p) => ({
-      id: p.id,
+    const savedPosts = await this.getSavedPosts(userId);
+    return posts.map((savedPost) => ({
+      id: savedPost.id,
       user: {
-        username: p.user.name,
-        id: p.user.id,
-        avatar: p.user.image || '',
+        username: savedPost.user.name,
+        id: savedPost.user.id,
+        avatar: savedPost.user.image || '',
       },
-      image: p.image,
-      likes: p.likes.length,
-      caption: p.caption,
-      timestamp: p.createdAt.toISOString(),
-      comments: p.comments.length,
-      isLiked: p.likes.some((like) => like.userId === userId),
+      image: savedPost.image,
+      likes: savedPost.likes.length,
+      caption: savedPost.caption,
+      timestamp: savedPost.createdAt.toISOString(),
+      comments: savedPost.comments.length,
+      isLiked: savedPost.likes.some((like) => like.userId === userId),
+      isSaved: savedPosts.map((sp) => sp.id).includes(savedPost.id),
     }));
   }
+
+  private async getFollowedUserIds(userId: string) {
+    const following = await this.database
+      .select({ id: follow.followingId })
+      .from(follow)
+      .where(eq(follow.followerId, userId));
+    return [userId, ...following.map((f) => f.id)];
+  }
+
 
   async likePost(postId: number, userId: string) {
     const existingLike = await this.database.query.like.findFirst({
