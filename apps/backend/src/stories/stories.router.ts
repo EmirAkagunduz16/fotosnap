@@ -19,18 +19,18 @@ import { StoriesService } from './stories.service';
 @Router()
 @UseMiddlewares(AuthTrpcMiddleware)
 export class StoriesRouter {
-  constructor(private readonly stroiesService: StoriesService) {}
+  constructor(private readonly storiesService: StoriesService) {}
 
   @Mutation({ input: createStorySchema })
   async create(
     @Input() createStoryInput: CreateStoryInput,
     @Ctx() ctx: AppContext,
   ) {
-    return this.stroiesService.create(createStoryInput, ctx.user.id);
+    return this.storiesService.create(createStoryInput, ctx.user.id);
   }
 
   @Query({ output: z.array(storyGroupSchema) })
   async findAll(@Ctx() ctx: AppContext) {
-    return this.stroiesService.findAll(ctx.user.id);
+    return this.storiesService.findAll(ctx.user.id);
   }
 }

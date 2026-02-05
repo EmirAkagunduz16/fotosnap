@@ -90,7 +90,7 @@ const ProfileHeader = ({
               className="h-auto p-0"
               onClick={onOpenFollowers}
             >
-              <span className="font-semibold">{profile.followersCount}</span>{" "}
+              <span className="font-semibold">{profile.followerCount}</span>{" "}
               <span className="text-muted-foreground">Followers</span>
             </Button>
 
