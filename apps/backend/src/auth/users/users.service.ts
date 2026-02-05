@@ -164,11 +164,11 @@ export class UsersService {
         FROM ${post} p
         WHERE p.${post.userId} = ${user.id}
       )`,
-        isFollowing: sql<boolean>` EXISTS(
+        isFollowing: sql<boolean>`EXISTS(
         SELECT 1
         FROM ${follow} f
         WHERE f.${follow.followerId} = ${currentUserId}
-          AND f.${follow.followingId} = ${user}.{${user.id}
+          AND f.${follow.followingId} = ${user.id}
       )`,
       })
       .from(user)

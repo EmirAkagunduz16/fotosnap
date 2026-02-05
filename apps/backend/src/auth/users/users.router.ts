@@ -44,9 +44,9 @@ export class UsersRouter {
     return this.usersService.getFollowing(input.userId, context.user.id);
   }
 
-  @Query({ output: z.array(userSchema) })
-  async getSuggestedUsers(@Ctx() ctx: AppContext) {
-    return this.usersService.getSuggestedUsers(ctx.user.id);
+  @Query({ output: z.array(userProfileSchema) })
+  async getSuggestedUsers(@Ctx() context: AppContext) {
+    return this.usersService.getSuggestedUsers(context.user.id);
   }
 
   @Mutation({ input: updateProfileSchema })
