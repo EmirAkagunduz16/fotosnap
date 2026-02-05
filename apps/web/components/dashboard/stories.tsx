@@ -6,6 +6,8 @@ import { Plus, User } from "lucide-react";
 import { StoryGroup } from "@repo/trpc/schemas";
 import { useState } from "react";
 import { Button } from "../ui/button";
+import StoryUpload from "./story-upload";
+import StoryViewer from "./story-viewer";
 
 interface StoriesProps {
   storyGroups: StoryGroup[];
@@ -15,6 +17,7 @@ interface StoriesProps {
 export function Stories({ storyGroups, onStoryUpload }: StoriesProps) {
   const [showCreateStory, setShowCreateStory] = useState(false);
   const [showStoryViewer, setShowStoryViewer] = useState(false);
+  const [selectedGroupIndex, setSelectedGroupIndex] = useState(0);
 
   const { data: session } = authClient.useSession();
 
@@ -34,6 +37,7 @@ export function Stories({ storyGroups, onStoryUpload }: StoriesProps) {
               className={`p-0.5 rounded-full ${ownStoryGroup ? "bg-linear-to-r from-yellow-400 to-fuchsia-600" : "bg-gray-200"}`}
               onClick={() => {
                 if (ownStoryGroup) {
+                  setSelectedGroupIndex(0);
                   setShowStoryViewer(true);
                 }
               }}
@@ -68,11 +72,14 @@ export function Stories({ storyGroups, onStoryUpload }: StoriesProps) {
             Your story
           </span>
         </div>
-        {otherStoryGroups?.map((storyGroup) => (
+        {otherStoryGroups?.map((storyGroup, index) => (
           <div
             className="flex flex-col items-center space-y-1 shrink-0"
             key={storyGroup.userId}
-            onClick={() => setShowStoryViewer(true)}
+            onClick={() => {
+              setSelectedGroupIndex(ownStoryGroup ? index + 1 : index);
+              setShowStoryViewer(true);
+            }}
           >
             <div className="relative">
               <div className="p-0.8 rounded-full bg-linear-to-r from-yellow-400 to-fuchsia-600 bg-gray-200">
@@ -100,6 +107,18 @@ export function Stories({ storyGroups, onStoryUpload }: StoriesProps) {
           </div>
         ))}
       </div>
+
+      <StoryUpload
+        open={showCreateStory}
+        onOpenChange={setShowCreateStory}
+        onSubmit={onStoryUpload}
+      />
+      <StoryViewer
+        storyGroups={storyGroups}
+        open={showStoryViewer}
+        onOpenChange={setShowStoryViewer}
+        initialGroupIndex={selectedGroupIndex}
+      />
     </Card>
   );
 }
