@@ -57,6 +57,13 @@
       "when": 1770295885472,
       "tag": "0007_sudden_wilson_fisk",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1770315299912,
+      "tag": "0008_nostalgic_mastermind",
+      "breakpoints": true
     }
   ]
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import EditProfileModal from "@/components/dashboard/edit-profile-modal";
-import FollowersFollowingModal from "@/components/users/followers-following-modal";
+import { EditProfileModal } from "@/components/dashboard/edit-profile-modal";
+import { FollowersFollowingModal } from "@/components/users/followers-following-modal";
 import PostModal from "@/components/users/post-modal";
 import ProfileHeader from "@/components/users/profile-header";
 import ProfileNavigation from "@/components/users/profile-navigation";

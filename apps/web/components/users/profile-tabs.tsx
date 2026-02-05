@@ -9,6 +9,7 @@ interface ProfileTabsProps {
   userPosts: Post[];
   savedPosts: Post[];
   name: string;
+  isOwnProfile: boolean;
   onPostClick: (post: Post) => void;
 }
 
@@ -16,6 +17,7 @@ const ProfileTabs = ({
   userPosts,
   savedPosts,
   name,
+  isOwnProfile,
   onPostClick,
 }: ProfileTabsProps) => {
   return (
@@ -42,17 +44,19 @@ const ProfileTabs = ({
           <PostsGrid posts={userPosts} onPostClick={onPostClick} />
         )}
       </TabsContent>
-      <TabsContent value="saved" className="mt-6">
-        {savedPosts.length === 0 ? (
-          <EmptyState
-            icon={Bookmark}
-            title="No Saved Posts"
-            description={`Save photos and videos to see them here.`}
-          />
-        ) : (
-          <PostsGrid posts={savedPosts} onPostClick={onPostClick} />
-        )}
-      </TabsContent>
+      {isOwnProfile && (
+        <TabsContent value="saved" className="mt-6">
+          {savedPosts.length === 0 ? (
+            <EmptyState
+              icon={Bookmark}
+              title="No Saved Posts"
+              description={`Save photos and videos to see them here`}
+            />
+          ) : (
+            <PostsGrid posts={savedPosts} onPostClick={onPostClick} />
+          )}
+        </TabsContent>
+      )}
     </Tabs>
   );
 };

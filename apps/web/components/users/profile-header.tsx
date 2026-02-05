@@ -18,6 +18,7 @@ interface ProfileHeaderProps {
   onOpenFollowers: () => void;
   onOpenFollowing: () => void;
   isFollowLoading: boolean;
+  isOwnProfile: boolean;
 }
 
 const ProfileHeader = ({
@@ -27,6 +28,7 @@ const ProfileHeader = ({
   onOpenFollowers,
   onOpenFollowing,
   isFollowLoading,
+  isOwnProfile,
 }: ProfileHeaderProps) => {
   return (
     <div className="mb-8">
@@ -51,26 +53,30 @@ const ProfileHeader = ({
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <h1 className="text-2xl font-normal">{profile.name}</h1>
             <div className="flex gap-2">
-              <Button
-                onClick={onFollowToggle}
-                disabled={isFollowLoading}
-                variant={profile.isFollowing ? "outline" : "default"}
-              >
-                {profile.isFollowing ? "Following" : "Follow"}
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant={"outline"} size={"icon"}>
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={onEditProfile}>
-                    <Edit className="w-4 h-4 mr-2" />
-                    Edit Profile
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {!isOwnProfile && (
+                <Button
+                  onClick={onFollowToggle}
+                  disabled={isFollowLoading}
+                  variant={profile.isFollowing ? "outline" : "default"}
+                >
+                  {profile.isFollowing ? "Following" : "Follow"}
+                </Button>
+              )}
+              {isOwnProfile && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <Settings className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={onEditProfile}>
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit Profile
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
           </div>
 
